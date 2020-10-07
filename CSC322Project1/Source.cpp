@@ -5,6 +5,7 @@
 #include <queue>
 #include <map>
 #include <numeric>
+#include <random>
 
 using namespace std;
 
@@ -115,13 +116,23 @@ void getData(Process P[], int& jobCount)
 	}
 }
 
-void generateRandomData(Process P[], int jobCount)
+void generateRandomData(Process P[], int jobCount, int k, int d, int v)
 {
+	/*
+	int k = 0; //Maximum Arrival Time (Uniform Distribution)
+	int d = 0; // Mean Average (Normal Distribution)
+	int v = 0; // standard deviation (Normal Distribution)
+	*/
+
+	random_device rd;  //Will be used to obtain a seed for the random number engine
+	mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+	uniform_int_distribution<> distrib(0, k);
+
 	srand(time(NULL));
 	for (int i = 0; i < jobCount; i++)
 	{
 		P[i].setId(i + 1);
-		P[i].setArrivalTime(rand() % (16));
+		P[i].setArrivalTime(distrib(gen));
 		P[i].setBurstTime(rand() % 20 + 2);
 		P[i].setCompletionTime(0);
 		P[i].setTurnAroundTime(0);
@@ -266,6 +277,10 @@ int main()
 {
 	int schedulingType, dataInputChoice, jobCount;
 	int totalTime = 50;
+	int k = 0; //Maximum Arrival Time (Uniform Distribution)
+	int d = 0; // Mean Average (Normal Distribution)
+	int v = 0; // standard deviation (Normal Distribution)
+
 	while (1) {
 
 		cout << "\n\t*****CPU Scheduling Algorithms*****\n";
@@ -290,29 +305,33 @@ int main()
 		Process* P = new Process[jobCount];
 
 		switch (dataInputChoice) {
-		case 1: {
-			getData(P, jobCount);
-			break;
-		}
+			case 1: {
+				getData(P, jobCount);
+				break;
+			}
 
-		case 2: {
-			generateRandomData(P, jobCount);
-		}
+			case 2: {
+				cout << "\n\t Enter Maximum Arrival Time : ";
+				cin >> k;
+				cout << "\n\t Enter Mean of CPU time & Standard Deviation :";
+				cin >> d >> v;
+				generateRandomData(P, jobCount, k,d,v);
+			}
 		}
 
 		switch (schedulingType) {
-		case 1: {
-			FirstComeFirstServed(P, jobCount, totalTime);
-			break;
-		}
-		case 2: {
-			ShortestJobFirst(P, jobCount);
-			break;
-		}
-		case 3: {
-			ShortestJobRemainingFirst(P, jobCount);
-			break;
-		}
+			case 1: {
+				FirstComeFirstServed(P, jobCount, totalTime);
+				break;
+			}
+			case 2: {
+				ShortestJobFirst(P, jobCount);
+				break;
+			}
+			case 3: {
+				ShortestJobRemainingFirst(P, jobCount);
+				break;
+			}
 		}
 	}
 	return 0;
