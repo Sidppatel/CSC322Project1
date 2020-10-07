@@ -10,6 +10,7 @@
 using namespace std;
 
 class Process {
+private:
 	int id;
 	int burstTime;
 	int arrivalTime;
@@ -18,6 +19,7 @@ class Process {
 	int waitingTime;
 	bool active;
 	int remaningTime;
+
 public:
 	int getId() {
 		return id;
@@ -119,21 +121,23 @@ void getData(Process P[], int& jobCount)
 void generateRandomData(Process P[], int jobCount, int k, int d, int v)
 {
 	/*
-	int k = 0; //Maximum Arrival Time (Uniform Distribution)
-	int d = 0; // Mean Average (Normal Distribution)
-	int v = 0; // standard deviation (Normal Distribution)
+	k = Maximum Arrival Time (Uniform Distribution)
+	d = Mean Average (Normal Distribution)
+	v = Standard deviation (Normal Distribution)
 	*/
 
-	random_device rd;  //Will be used to obtain a seed for the random number engine
-	mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-	uniform_int_distribution<> distrib(0, k);
+	random_device rd;	//Will be used to obtain a seed for the random number engine
+	mt19937 gen(rd());	//Standard mersenne_twister_engine seeded with rd()
+	mt19937 eng;		//Standard mersenne_twister_engine
 
-	srand(time(NULL));
+	uniform_int_distribution<> distrib(0, k);
+	normal_distribution<float> normal(d, v);
+
 	for (int i = 0; i < jobCount; i++)
 	{
 		P[i].setId(i + 1);
 		P[i].setArrivalTime(distrib(gen));
-		P[i].setBurstTime(rand() % 20 + 2);
+		P[i].setBurstTime(abs(int(normal(eng))));
 		P[i].setCompletionTime(0);
 		P[i].setTurnAroundTime(0);
 		P[i].setWaitingTime(0);
@@ -254,11 +258,9 @@ void ShortestJobRemainingFirst(Process P[], int jobCount)
 				executedCount++;
 				processInQueue.erase(minPosition);
 			}
-
 		}
-		else {
+		else
 			time++;
-		}
 	}
 	for (int i = 0; i < jobCount; i++) {
 		P[i].setCompletionTime(pid_compl[P[i].getId()]);
@@ -313,9 +315,9 @@ int main()
 			case 2: {
 				cout << "\n\t Enter Maximum Arrival Time : ";
 				cin >> k;
-				cout << "\n\t Enter Mean of CPU time & Standard Deviation :";
+				cout << "\t Enter Mean of CPU time & Standard Deviation :";
 				cin >> d >> v;
-				generateRandomData(P, jobCount, k,d,v);
+				generateRandomData(P, jobCount, k, d, v);
 			}
 		}
 
