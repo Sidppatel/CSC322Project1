@@ -331,6 +331,18 @@ int main()
 			exit(1);
 		}
 
+		cout << "\t No. of processes : ";
+		cin >> jobCount;
+
+		cout << "\n\t Enter Maximum Arrival Time : ";
+		cin >> k;
+		cout << "\t Enter Mean of CPU time & Standard Deviation :";
+		cin >> d >> v;
+
+		Process* P = new Process[jobCount];
+		generateRandomData(P, jobCount, k, d, v);
+
+		/*
 		cout << "\n\t Manually enter data or Auto generated data? \n\t 1. Manually \t 2. Random Generated \n";
 		cout << "\n\t Enter your choice [1/2] : ";
 
@@ -355,7 +367,7 @@ int main()
 				generateRandomData(P, jobCount, k, d, v);
 			}
 		}
-
+		*/
 		displayProcess(P, jobCount);
 
 		switch (schedulingType) {
