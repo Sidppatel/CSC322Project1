@@ -102,13 +102,13 @@ void display(Process P[], int jobCount, float avgtat = 0)
 	int remaningTime = 0;
 	sort(P, P + jobCount, compareByRemaningTime);
 	cout << "\n\n\t\t The Process Status \n\n";
-	cout << "\tID\tActive\tArrival\tCPU Time\tCompletion\tTurn Around\tWaiting\tRT";
+	cout << "\tID\tActive\tArrival Time\tCPU Time\tCompletion\tTurn Around\tWaiting Time\tRemaning Time";
 	for (int i = 0; i < jobCount; ++i) {
 		remaningTime = (P[i].getRemaningTime() < 0) ? 0 : P[i].getRemaningTime();
-		cout << "\n\t" << P[i].getId() << "\t" << P[i].getActive() << "\t" << P[i].getArrivalTime() << "\t" << P[i].getCPUTime() << "\t"
-			<< P[i].getCompletionTime() << "\t\t" << P[i].getTurnAroundTime() << "\t\t" << P[i].getWaitingTime() << "\t" << remaningTime;
+		cout << "\n\t" << P[i].getId() << "\t" << P[i].getActive() << "\t" << P[i].getArrivalTime() << "\t\t" << P[i].getCPUTime() << "\t\t"
+			<< P[i].getCompletionTime() << "\t\t" << P[i].getTurnAroundTime() << "\t\t" << P[i].getWaitingTime() << "\t\t" << remaningTime;
 	}
-	cout << "\n\t\tAverage Turn Around Time: " << avgtat;
+	cout << "\n\n\t\tAverage Turn Around Time: " << avgtat;
 	cout << "\n\n\n";
 }
 
@@ -183,11 +183,15 @@ void FirstComeFirstServed(Process P[], int jobCount, int time)
 		prevEnd = P[i].getCompletionTime();
 	}
 
+	/*
+	* Print Turn Around time 
+	for (int i = 0; i < turnAroundTime.size(); i++)
+		std::cout << turnAroundTime.at(i) << ' ';
+	*/
 	auto n = turnAroundTime.size();
-
-	if (n != 0) {
+	
+	if (n != 0)
 		avgTurnAroundTime = accumulate(turnAroundTime.begin(), turnAroundTime.end(), 0.0) / n;
-	}
 	display(P, jobCount, avgTurnAroundTime);
 }
 
@@ -243,9 +247,8 @@ void ShortestJobFirst(Process P[], int jobCount,int time) // Shortest job first 
 	}
 	auto n = turnAroundTime.size();
 
-	if (n != 0) {
+	if (n != 0)
 		avgTurnAroundTime = accumulate(turnAroundTime.begin(), turnAroundTime.end(), 0.0) / n;
-	}
 	display(P, jobCount, avgTurnAroundTime);
 }
 
@@ -268,7 +271,6 @@ void ShortestJobRemainingFirst(Process P[], int jobCount, int time)
 				processInQueue.push_back(P[i]);
 				inQueue[i] = true;
 			}
-
 		}
 
 		if (processInQueue.size() != 0)
@@ -304,9 +306,8 @@ void ShortestJobRemainingFirst(Process P[], int jobCount, int time)
 	}
 	auto n = turnAroundTime.size();
 
-	if (n != 0) {
+	if (n != 0)
 		avgTurnAroundTime = accumulate(turnAroundTime.begin(), turnAroundTime.end(), 0.0) / n;
-	}
 	display(P, jobCount, avgTurnAroundTime);
 }
 
@@ -343,6 +344,7 @@ int main()
 		generateRandomData(P, jobCount, k, d, v);
 
 		/*
+		* Options to Control Process by Manually
 		cout << "\n\t Manually enter data or Auto generated data? \n\t 1. Manually \t 2. Random Generated \n";
 		cout << "\n\t Enter your choice [1/2] : ";
 
