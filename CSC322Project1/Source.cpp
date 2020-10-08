@@ -12,7 +12,7 @@ using namespace std;
 class Process {
 private:
 	int id;
-	int burstTime;
+	int cpuTime;
 	int arrivalTime;
 	int completionTime;
 	int turnAroundTime;
@@ -24,8 +24,8 @@ public:
 	int getId() {
 		return id;
 	}
-	int getBurstTime() {
-		return burstTime;
+	int getCPUTime() {
+		return cpuTime;
 	}
 	int getArrivalTime() {
 		return arrivalTime;
@@ -48,8 +48,8 @@ public:
 	void setId(int id) {
 		this->id = id;
 	}
-	void setBurstTime(int burstTime) {
-		this->burstTime = burstTime;
+	void setCPUTime(int cpuTime) {
+		this->cpuTime= cpuTime;
 	}
 	void setArrivalTime(int arrivalTime) {
 		this->arrivalTime = arrivalTime;
@@ -81,9 +81,9 @@ bool compareByArrival(Process p, Process q)
 	return p.getArrivalTime() < q.getArrivalTime();
 }
 
-bool compareByBurst(Process p, Process q)
+bool compareByCPU(Process p, Process q)
 {
-	return p.getBurstTime() < q.getBurstTime();
+	return p.getCPUTime() < q.getCPUTime();
 }
 
 bool compareById(Process p, Process q)
@@ -93,7 +93,7 @@ bool compareById(Process p, Process q)
 
 void displayProcess(Process P[], int jobCount) {
 	for (int i = 0; i < jobCount; i++) {
-		cout << "\t\tProcess ID : " << P[i].getId() << "\tArrival Time : " << P[i].getArrivalTime() << "\tCPU time : " << P[i].getBurstTime() << endl;
+		cout << "\t\tProcess ID : " << P[i].getId() << "\tArrival Time : " << P[i].getArrivalTime() << "\tCPU time : " << P[i].getCPUTime() << endl;
 	}
 }
 
@@ -102,10 +102,10 @@ void display(Process P[], int jobCount, float avgtat = 0)
 	int remaningTime = 0;
 	sort(P, P + jobCount, compareByRemaningTime);
 	cout << "\n\n\t\t The Process Status \n\n";
-	cout << "\tID\tActive\tArrival\tBurst\tCompletion\tTurn Around\tWaiting\tRT";
+	cout << "\tID\tActive\tArrival\tCPU Time\tCompletion\tTurn Around\tWaiting\tRT";
 	for (int i = 0; i < jobCount; ++i) {
 		remaningTime = (P[i].getRemaningTime() < 0) ? 0 : P[i].getRemaningTime();
-		cout << "\n\t" << P[i].getId() << "\t" << P[i].getActive() << "\t" << P[i].getArrivalTime() << "\t" << P[i].getBurstTime() << "\t"
+		cout << "\n\t" << P[i].getId() << "\t" << P[i].getActive() << "\t" << P[i].getArrivalTime() << "\t" << P[i].getCPUTime() << "\t"
 			<< P[i].getCompletionTime() << "\t\t" << P[i].getTurnAroundTime() << "\t\t" << P[i].getWaitingTime() << "\t" << remaningTime;
 	}
 	cout << "\n\t\tAverage Turn Around Time: " << avgtat;
@@ -123,9 +123,9 @@ void getData(Process P[], int& jobCount)
 		cout << "\n\t Enter the Process Arrival Time: ";
 		cin >> x;
 		P[i].setArrivalTime(x);
-		cout << "\n\t Enter the Process Burst Time: ";
+		cout << "\n\t Enter the Process CPU Time: ";
 		cin >> x;
-		P[i].setBurstTime(x);
+		P[i].setCPUTime(x);
 		P[i].setCompletionTime(0);
 		P[i].setTurnAroundTime(0);
 		P[i].setWaitingTime(0);
@@ -151,7 +151,7 @@ void generateRandomData(Process P[], int jobCount, int k, int d, int v)
 	{
 		P[i].setId(i + 1);
 		P[i].setArrivalTime(distrib(gen));
-		P[i].setBurstTime(abs(int(normal(eng))));
+		P[i].setCPUTime(abs(int(normal(eng))));
 		P[i].setCompletionTime(0);
 		P[i].setTurnAroundTime(0);
 		P[i].setWaitingTime(0);
@@ -169,9 +169,9 @@ void FirstComeFirstServed(Process P[], int jobCount, int time)
 	sort(P, P + jobCount, compareByArrival); // Sorting the processes according to Arrival Time
 
 	for (int i = 0, prevEnd = 0; i < jobCount; i++) {
-		P[i].setCompletionTime(max(prevEnd, P[i].getArrivalTime()) + P[i].getBurstTime());
+		P[i].setCompletionTime(max(prevEnd, P[i].getArrivalTime()) + P[i].getCPUTime());
 		P[i].setTurnAroundTime(P[i].getCompletionTime() - P[i].getArrivalTime());
-		P[i].setWaitingTime(P[i].getTurnAroundTime() - P[i].getBurstTime());
+		P[i].setWaitingTime(P[i].getTurnAroundTime() - P[i].getCPUTime());
 		P[i].setRemaningTime(time - P[i].getCompletionTime());
 		if (P[i].getCompletionTime() < time)
 		{
@@ -209,10 +209,10 @@ void ShortestJobFirst(Process P[], int jobCount,int time) // Shortest job first 
 		}
 		if (processInQueue.size() != 0) {
 			vector<Process>::iterator minPosition = min_element(processInQueue.begin(),
-				processInQueue.end(), compareByBurst);
-			Process processMinBurstTime = *minPosition;
-			t += processMinBurstTime.getBurstTime();
-			id_compl[processMinBurstTime.getId()] = t;
+				processInQueue.end(), compareByCPU);
+			Process processMinCPUTime = *minPosition;
+			t += processMinCPUTime.getCPUTime();
+			id_compl[processMinCPUTime.getId()] = t;
 			executedCount++;
 			processInQueue.erase(minPosition);
 
@@ -229,7 +229,7 @@ void ShortestJobFirst(Process P[], int jobCount,int time) // Shortest job first 
 	{
 		P[i].setCompletionTime(id_compl[P[i].getId()]);
 		P[i].setTurnAroundTime(P[i].getCompletionTime() - P[i].getArrivalTime());
-		P[i].setWaitingTime(P[i].getTurnAroundTime() - P[i].getBurstTime());
+		P[i].setWaitingTime(P[i].getTurnAroundTime() - P[i].getCPUTime());
 		P[i].setRemaningTime(time - P[i].getCompletionTime());
 		if (P[i].getCompletionTime() < time)
 		{
@@ -274,10 +274,10 @@ void ShortestJobRemainingFirst(Process P[], int jobCount, int time)
 		if (processInQueue.size() != 0)
 		{
 			vector<Process>::iterator minPosition = min_element(processInQueue.begin(),
-				processInQueue.end(), compareByBurst);
-			(*minPosition).setBurstTime((*minPosition).getBurstTime() - 1);
+				processInQueue.end(), compareByCPU);
+			(*minPosition).setCPUTime((*minPosition).getCPUTime() - 1);
 			t++;
-			if ((*minPosition).getBurstTime() == 0)
+			if ((*minPosition).getCPUTime() == 0)
 			{
 				pid_compl[(*minPosition).getId()] = t;
 				executedCount++;
@@ -290,7 +290,7 @@ void ShortestJobRemainingFirst(Process P[], int jobCount, int time)
 	for (int i = 0; i < jobCount; i++) {
 		P[i].setCompletionTime(pid_compl[P[i].getId()]);
 		P[i].setTurnAroundTime(P[i].getCompletionTime() - P[i].getArrivalTime());
-		P[i].setWaitingTime(P[i].getTurnAroundTime() - P[i].getBurstTime());
+		P[i].setWaitingTime(P[i].getTurnAroundTime() - P[i].getCPUTime());
 
 		P[i].setRemaningTime(time - P[i].getCompletionTime());
 		if (P[i].getCompletionTime() < time)
