@@ -6,6 +6,7 @@
 #include <map>
 #include <numeric>
 #include <random>
+#include <string> 
 
 using namespace std;
 
@@ -99,14 +100,20 @@ void displayProcess(Process P[], int jobCount) {
 
 void display(Process P[], int jobCount, float avgtat = 0)
 {
-	int remaningTime = 0;
+	string remaningTime = " ";
+	string waitingTime = "";
+	string turnAroundTime = "";
+	string completionTime = "";
 	sort(P, P + jobCount, compareByRemaningTime);
 	cout << "\n\n\t\t The Process Status \n\n";
-	cout << "\tID\tActive\tArrival Time\tCPU Time\tCompletion\tTurn Around\tWaiting Time\tRemaning Time";
+	cout << "\tID\tActive\tArrival Time\tCPU Time\tCompletion Time\t\tTurn Around\tWaiting Time\tRemaning Time";
 	for (int i = 0; i < jobCount; ++i) {
-		remaningTime = (P[i].getRemaningTime() < 0) ? 0 : P[i].getRemaningTime();
+		remaningTime = (P[i].getRemaningTime() < 0) ? "-" : to_string(P[i].getRemaningTime());
+		waitingTime = (! P[i].getActive()) ? "-" : to_string(P[i].getWaitingTime());
+		turnAroundTime = (! P[i].getActive()) ? "-" : to_string(P[i].getTurnAroundTime());
+		completionTime = (! P[i].getActive()) ? "-" : to_string(P[i].getCompletionTime());
 		cout << "\n\t" << P[i].getId() << "\t" << P[i].getActive() << "\t" << P[i].getArrivalTime() << "\t\t" << P[i].getCPUTime() << "\t\t"
-			<< P[i].getCompletionTime() << "\t\t" << P[i].getTurnAroundTime() << "\t\t" << P[i].getWaitingTime() << "\t\t" << remaningTime;
+			<< completionTime << "\t\t\t" << turnAroundTime << "\t\t" << waitingTime << "\t\t" << remaningTime;
 	}
 	cout << "\n\n\t\tAverage Turn Around Time: " << avgtat;
 	cout << "\n\n\n";
