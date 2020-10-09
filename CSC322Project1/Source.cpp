@@ -1,3 +1,5 @@
+#pragma warning( disable : 4244)
+
 #include <iostream>
 #include <algorithm>
 #include <cstdlib>
@@ -87,11 +89,6 @@ bool compareByCPU(Process p, Process q)
 	return p.getCPUTime() < q.getCPUTime();
 }
 
-bool compareById(Process p, Process q)
-{
-	return p.getId() < q.getId();
-}
-
 void displayProcess(Process P[], int jobCount) {
 	for (int i = 0; i < jobCount; i++) {
 		cout << "\t\tProcess ID : " << P[i].getId() << "\tArrival Time : " << P[i].getArrivalTime() << "\tCPU time : " << P[i].getCPUTime() << endl;
@@ -108,10 +105,16 @@ void display(Process P[], int jobCount, float avgtat = 0)
 	cout << "\n\n\t\t The Process Status \n\n";
 	cout << "\tID\tActive\tArrival Time\tCPU Time\tCompletion Time\t\tTurn Around\tWaiting Time\tRemaning Time";
 	for (int i = 0; i < jobCount; ++i) {
+		remaningTime = to_string(P[i].getRemaningTime());
+		waitingTime = to_string(P[i].getWaitingTime());
+		turnAroundTime = to_string(P[i].getTurnAroundTime());
+		completionTime = to_string(P[i].getCompletionTime());
+		/*
 		remaningTime = (P[i].getRemaningTime() < 0) ? "-" : to_string(P[i].getRemaningTime());
 		waitingTime = (! P[i].getActive()) ? "-" : to_string(P[i].getWaitingTime());
 		turnAroundTime = (! P[i].getActive()) ? "-" : to_string(P[i].getTurnAroundTime());
 		completionTime = (! P[i].getActive()) ? "-" : to_string(P[i].getCompletionTime());
+		*/
 		cout << "\n\t" << P[i].getId() << "\t" << P[i].getActive() << "\t" << P[i].getArrivalTime() << "\t\t" << P[i].getCPUTime() << "\t\t"
 			<< completionTime << "\t\t\t" << turnAroundTime << "\t\t" << waitingTime << "\t\t" << remaningTime;
 	}
@@ -180,7 +183,7 @@ void FirstComeFirstServed(Process P[], int jobCount, int time)
 		P[i].setTurnAroundTime(P[i].getCompletionTime() - P[i].getArrivalTime());
 		P[i].setWaitingTime(P[i].getTurnAroundTime() - P[i].getCPUTime());
 		P[i].setRemaningTime(time - P[i].getCompletionTime());
-		if (P[i].getCompletionTime() < time)
+		if (P[i].getCompletionTime() <= time)
 		{
 			P[i].setActive(true);
 			turnAroundTime.push_back(P[i].getTurnAroundTime());
@@ -242,7 +245,7 @@ void ShortestJobFirst(Process P[], int jobCount,int time) // Shortest job first 
 		P[i].setTurnAroundTime(P[i].getCompletionTime() - P[i].getArrivalTime());
 		P[i].setWaitingTime(P[i].getTurnAroundTime() - P[i].getCPUTime());
 		P[i].setRemaningTime(time - P[i].getCompletionTime());
-		if (P[i].getCompletionTime() < time)
+		if (P[i].getCompletionTime() <= time)
 		{
 			P[i].setActive(true);
 			turnAroundTime.push_back(P[i].getTurnAroundTime());
@@ -300,9 +303,8 @@ void ShortestJobRemainingFirst(Process P[], int jobCount, int time)
 		P[i].setCompletionTime(pid_compl[P[i].getId()]);
 		P[i].setTurnAroundTime(P[i].getCompletionTime() - P[i].getArrivalTime());
 		P[i].setWaitingTime(P[i].getTurnAroundTime() - P[i].getCPUTime());
-
 		P[i].setRemaningTime(time - P[i].getCompletionTime());
-		if (P[i].getCompletionTime() < time)
+		if (P[i].getCompletionTime() <= time)
 		{
 			P[i].setActive(true);
 			turnAroundTime.push_back(P[i].getTurnAroundTime());
@@ -339,19 +341,19 @@ int main()
 			exit(1);
 		}
 
+		/*
 		cout << "\t No. of processes : ";
 		cin >> jobCount;
-
 		cout << "\n\t Enter Maximum Arrival Time : ";
 		cin >> k;
 		cout << "\t Enter Mean of CPU time & Standard Deviation :";
 		cin >> d >> v;
-
+		
 		Process* P = new Process[jobCount];
 		generateRandomData(P, jobCount, k, d, v);
-
-		/*
-		* Options to Control Process by Manually
+		*/
+		
+//		* Options to Control Process by Manually
 		cout << "\n\t Manually enter data or Auto generated data? \n\t 1. Manually \t 2. Random Generated \n";
 		cout << "\n\t Enter your choice [1/2] : ";
 
@@ -376,7 +378,7 @@ int main()
 				generateRandomData(P, jobCount, k, d, v);
 			}
 		}
-		*/
+		
 		displayProcess(P, jobCount);
 
 		switch (schedulingType) {
