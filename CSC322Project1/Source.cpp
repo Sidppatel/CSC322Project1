@@ -193,11 +193,6 @@ void FirstComeFirstServed(Process P[], int jobCount, int time)
 		prevEnd = P[i].getCompletionTime();
 	}
 
-	/*
-	* Print Turn Around time 
-	for (int i = 0; i < turnAroundTime.size(); i++)
-		std::cout << turnAroundTime.at(i) << ' ';
-	*/
 	auto n = turnAroundTime.size();
 	
 	if (n != 0)
